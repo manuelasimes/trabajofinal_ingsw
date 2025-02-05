@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\Manuela\\Documents\\CUARTO INGENIERIA\\IngSW3\\final\\BlogApi\\wwwroot\\images\\Captura de pantalla 2025-02-04 203029.png",
+      "PackagePath": "staticwebassets\\images\\Captura de pantalla 2025-02-04 203029.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.BlogApi.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.BlogApi.props",
+      "PackagePath": "build\\BlogApi.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.BlogApi.props",
+      "PackagePath": "buildMultiTargeting\\BlogApi.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.BlogApi.props",
+      "PackagePath": "buildTransitive\\BlogApi.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
