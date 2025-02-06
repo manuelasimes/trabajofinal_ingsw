@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using BlogApi.AuthServices;
+using BlogApi.ArticleServices;
 
 var builder = WebApplication.CreateBuilder(args);
 

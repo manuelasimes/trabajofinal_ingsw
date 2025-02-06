@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using BlogApi.Data; // Namespace de tu DbContext
 using BlogApi.Models; // Namespace de tu modelo
 
+namespace BlogApi.ArticleServices;
+
 public class ArticleService : IArticleService
 {
     private readonly ApplicationDbContext _context;

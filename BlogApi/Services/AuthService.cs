@@ -1,3 +1,4 @@
+namespace BlogApi.AuthServices;
 public interface IAuthService
 {
     bool ValidateUser(string username, string password);
