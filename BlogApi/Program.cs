@@ -3,19 +3,30 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using BlogApi.AuthServices;
 using BlogApi.ArticleServices;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cadena de conexión para MySQL (en este caso, usando el archivo appsettings.json)
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+// ✅ Configurar la base de datos correctamente según el entorno
+var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? builder.Environment.EnvironmentName;
 
-// Configuración de JWT
-var key = "clave_secreta_para_firma"; // Debes cambiar esto a algo más seguro
+if (environment == "Testing")
+{
+    builder.Services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseInMemoryDatabase("TestDatabase"));
+}
+else
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+}
+
+// 🔑 Configuración de autenticación con JWT
+var key = "clave_secreta_para_firma"; // Cambiar en producción
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -30,16 +41,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
         };
     });
-    // Configurar CORS
+
+// 🌐 Configurar CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularDevApp",
-        builder => builder.WithOrigins("http://localhost:4200") // Dirección de tu frontend
-        .AllowAnyMethod()
-        .AllowAnyHeader());
+        policy => policy.WithOrigins("http://localhost:4200")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 });
 
-
+// ✅ Servicios de la API
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -49,12 +61,18 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
-// Middlewares para autenticación y autorización
+// ✅ Middlewares
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("AllowAngularDevApp");
 
-// Configuración de rutas
-app.MapControllers();
+if (app.Environment.IsDevelopment() || environment == "Testing")
+{
+    app.UseDeveloperExceptionPage();
+}
 
+app.MapControllers();
 app.Run();
+
+// ✅ Agrega esta clase parcial para que WebApplicationFactory lo reconozca
+public partial class Program { }
