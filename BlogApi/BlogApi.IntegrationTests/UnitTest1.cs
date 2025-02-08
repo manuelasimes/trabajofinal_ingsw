@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration; // Asegúrate de importar este namespace
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,20 +10,33 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using BlogApi.Data;
 using Microsoft.Extensions.Hosting;
+using System.Linq;  // Asegúrate de importar esto para usar SingleOrDefault
 
 namespace BlogApi.IntegrationTests
 {
+    
     public class ArticlesControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
 
         public ArticlesControllerTests(WebApplicationFactory<Program> factory)
         {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
+
             _client = factory.WithWebHostBuilder(builder =>
             {
-                builder.ConfigureServices(services =>
+                builder.ConfigureAppConfiguration((context, config) =>
                 {
-                    // 🔥 Eliminar cualquier DbContext registrado previamente
+                    // Configurar el entorno para pruebas
+                    var environment = "Testing"; // Establece el entorno como "Testing"
+                    config.AddInMemoryCollection(new[] 
+                    { 
+                        new KeyValuePair<string, string>("DOTNET_ENVIRONMENT", environment) 
+                    });
+                })
+                .ConfigureServices(services =>
+                {
+                    // 🔥 Eliminar cualquier DbContext registrado previamente para evitar conflictos
                     var descriptor = services.SingleOrDefault(
                         d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
 
@@ -31,19 +45,30 @@ namespace BlogApi.IntegrationTests
                         services.Remove(descriptor);
                     }
 
-                    // 🔥 Usar solo la base de datos en memoria para los tests
+                    // 🔥 Agregar la base de datos en memoria correctamente
                     services.AddDbContext<ApplicationDbContext>(options =>
                         options.UseInMemoryDatabase("TestDatabase"));
 
-                    // 🔥 Inicializar la base de datos con datos de prueba
-                    using (var scope = services.BuildServiceProvider().CreateScope())
+                    // 🔥 Reconstruir el proveedor de servicios
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
                     {
-                        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<ApplicationDbContext>();
                         db.Database.EnsureDeleted();
                         db.Database.EnsureCreated();
 
-                        db.Articles.Add(new Article { Id = 1, Title = "Test Article", Description = "Content of test article" });
-                        db.SaveChanges();
+                        try
+                        {
+                            // Insertar datos de prueba
+                            db.Articles.Add(new Article { Id = 1, Title = "Test Article", Description = "Content of test article" });
+                            db.SaveChanges();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error inicializando la base de datos de prueba: {ex.Message}");
+                        }
                     }
                 });
             }).CreateClient();
@@ -83,5 +108,12 @@ namespace BlogApi.IntegrationTests
             Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
             Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
         }
+    
+
+    public void Dispose()
+    {
+        // Limpiar la variable de entorno después de las pruebas
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
     }
-}
+    }}
+    

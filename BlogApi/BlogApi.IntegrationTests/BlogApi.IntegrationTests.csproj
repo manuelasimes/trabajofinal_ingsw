@@ -10,6 +10,7 @@
     <IsTestProject>true</IsTestProject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute> <!-- 🔥 Línea clave -->
+    <AspDotNetEnvironment>Testing</AspDotNetEnvironment>
 
   </PropertyGroup>
 
@@ -30,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BlogApi.csproj" />
+    <ProjectReference Include="..\BlogApi.Tests\BlogApi.Tests.csproj" />
   </ItemGroup>
 
 </Project>
