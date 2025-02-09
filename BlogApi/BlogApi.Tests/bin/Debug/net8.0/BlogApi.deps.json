@@ -47,6 +47,7 @@
           "Microsoft.EntityFrameworkCore.Design": "6.0.28",
           "Microsoft.EntityFrameworkCore.InMemory": "8.0.0",
           "Microsoft.EntityFrameworkCore.Relational": "8.0.0",
+          "Microsoft.TestPlatform": "17.11.0",
           "Moq": "4.20.72",
           "Pomelo.EntityFrameworkCore.MySql": "8.0.0",
           "Swashbuckle.AspNetCore": "6.4.0",
@@ -1348,6 +1349,7 @@
           "lib/netstandard2.0/Microsoft.OpenApi.dll": {}
         }
       },
+      "Microsoft.TestPlatform/17.11.0": {},
       "Microsoft.Win32.Registry/4.5.0": {
         "dependencies": {
           "System.Security.AccessControl": "4.5.0",
@@ -4722,6 +4724,13 @@
       "sha512": "sha512-rURwggB+QZYcSVbDr7HSdhw/FELvMlriW10OeOzjPT7pstefMo7IThhtNtDudxbXhW+lj0NfX72Ka5EDsG8x6w==",
       "path": "microsoft.openapi/1.4.3",
       "hashPath": "microsoft.openapi.1.4.3.nupkg.sha512"
+    },
+    "Microsoft.TestPlatform/17.11.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-fCVRZR6pzvlPKPC+eLMWCkXWqc+tGONxNccCfYJ25vDKSaQErtI/Zbg5QMR5QukGmrQKjIhKc7NoMN0rgl3FAA==",
+      "path": "microsoft.testplatform/17.11.0",
+      "hashPath": "microsoft.testplatform.17.11.0.nupkg.sha512"
     },
     "Microsoft.Win32.Registry/4.5.0": {
       "type": "package",

@@ -92,6 +92,10 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
+            "Microsoft.TestPlatform": {
+              "target": "Package",
+              "version": "[17.11.0, )"
+            },
             "Moq": {
               "target": "Package",
               "version": "[4.20.72, )"
