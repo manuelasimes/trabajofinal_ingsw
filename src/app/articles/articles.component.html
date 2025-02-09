@@ -1,0 +1,32 @@
+<h1 class="page-title">Nuestra Bitácora</h1>
+
+<div class="articles-container">
+  <div *ngFor="let article of articles" class="article-card">
+    <h2 class="article-title">{{ article.title }}</h2>
+    <p class="article-description">{{ article.description }}</p>
+    <p class="article-date">{{ article.date | date:'longDate' }}</p>
+  </div>
+</div>
+
+<div class="add-article-container">
+  <h3 class="add-article-title">Agregar Nuevo Artículo</h3>
+  <form (submit)="addArticle()" class="article-form">
+    
+    <div class="input-group">
+      <label for="title">Título</label>
+      <input id="title" [(ngModel)]="newArticle.title" name="title" placeholder="Ingrese el título" required />
+    </div>
+
+    <div class="input-group">
+      <label for="description">Descripción</label>
+      <textarea id="description" [(ngModel)]="newArticle.description" name="description" placeholder="Ingrese la descripción"></textarea>
+    </div>
+
+    <div class="input-group">
+      <label for="date">Fecha</label>
+      <input id="date" [(ngModel)]="newArticle.date" name="date" type="date" />
+    </div>
+
+    <button type="submit" class="add-article-button">Agregar Artículo</button>
+  </form>
+</div>
