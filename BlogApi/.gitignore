@@ -1,3 +1,4 @@
-# Ignorar las carpetas bin y obj
+    # Ignorar las carpetas bin y obj
 bin/
 obj/
+!BlogApi/
