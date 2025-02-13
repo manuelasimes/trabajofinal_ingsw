@@ -72,12 +72,7 @@ stages:
               downloadPath: $(Build.ArtifactStagingDirectory)
           - script: echo $(Build.ArtifactStagingDirectory)
             displayName: 'Show Artifact Staging Directory'
-          - task: AzureWebApp@1
-            displayName: 'Deploy Backend to QA'
-            inputs:
-              azureSubscription: 'Student-Subs'
-              appName: $(qaBackendAppName)
-              package: $(Build.ArtifactStagingDirectory)/backendBuild
+
   - stage: DeployToProduction
     displayName: 'Deploy to Production'
     dependsOn: BuildAndDeployQA
