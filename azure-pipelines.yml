@@ -10,7 +10,54 @@ variables:
   qaFrontendUrl: 'https://blogapi-front-qa-bhd4cqfxd0ejegd5.canadacentral-01.azurewebsites.net/'
   prodFrontendAppName: 'blogapi-front-prod'
   prodBackendAppName: 'blogapi-back-prod'
-            - task: PublishBuildArtifacts@1
+
+stages:
+  - stage: BuildAndDeployQA
+    displayName: 'Build and Deploy to QA'
+    jobs:
+      - job: FrontendBuildDeploy
+        displayName: 'Frontend Build and Deploy'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+        - checkout: self  # Asegura que todo el código del repo se clone
+          persistCredentials: true
+          fetchDepth: 0
+
+        - task: NodeTool@0
+          displayName: 'Use Node.js 18'
+          inputs:
+             versionSpec: '18.x'
+      - job: BackendBuildDeploy
+        displayName: 'Backend Build and Deploy'
+        dependsOn: FrontendBuildDeploy
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Install .NET SDK'
+            inputs:
+              packageType: 'sdk'
+              version: '8.0.x'
+              installationPath: $(Agent.ToolsDirectory)/dotnet
+
+          - script: |
+              echo "Construyendo el backend..."
+              dotnet build final.sln
+              echo "Publicando el backend..."
+              dotnet publish BlogApi/BlogApi.csproj -c Release -o $(Build.ArtifactStagingDirectory)/backendBuild
+              echo "Ejecutando pruebas..."
+              dotnet test BlogApi/BlogApi.Tests/BlogApi.Tests.csproj --collect:"XPlat Code Coverage" --results-directory:$(Build.ArtifactStagingDirectory)/TestResults
+            displayName: 'Build, Publish and Unit Test Backend'
+
+        #publicar tests: 
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish Backend Code Coverage'
+            inputs:
+              codeCoverageTool: 'Cobertura'
+              summaryFileLocation: '$(Build.ArtifactStagingDirectory)/TestResults/**/coverage.cobertura.xml'
+
+          - task: PublishBuildArtifacts@1
             displayName: 'Publish Backend Artifacts'
             inputs:
               publishLocation: 'Container'
@@ -25,14 +72,36 @@ variables:
               downloadPath: $(Build.ArtifactStagingDirectory)
           - script: echo $(Build.ArtifactStagingDirectory)
             displayName: 'Show Artifact Staging Directory'
-
           - task: AzureWebApp@1
             displayName: 'Deploy Backend to QA'
             inputs:
               azureSubscription: 'Student-Subs'
               appName: $(qaBackendAppName)
               package: $(Build.ArtifactStagingDirectory)/backendBuild
- 
+  - stage: DeployToProduction
+    displayName: 'Deploy to Production'
+    dependsOn: BuildAndDeployQA
+    condition: succeeded()
+    jobs:
+      - deployment: DeployToProd  # Cambio aquí para usar un "deployment job"
+        displayName: 'Deploy to Production'
+        environment: 'Production'  # Especifica el Environment
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - script: |
+                    echo "Listing files in $(Pipeline.Workspace)"
+                    ls -R $(Pipeline.Workspace)
+                  displayName: 'List files in Pipeline workspace'
+
+
+
+
                 # Descargamos los artefactos del backend
                 - task: DownloadBuildArtifacts@0
                   displayName: 'Download Backend Artifacts'
