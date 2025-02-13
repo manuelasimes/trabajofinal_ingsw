@@ -96,6 +96,6 @@ stages:
                   inputs:
                     azureSubscription: 'Student-Subs'
                     appName: $(prodBackendAppName)
-                    package: $(Build.ArtifactStagingDirectory)/backendBuild
+                    package: $(Build.ArtifactStagingDirectory)/backendBuild/backendBuild
 
 
