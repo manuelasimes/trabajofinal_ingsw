@@ -64,6 +64,12 @@ stages:
               downloadPath: $(Build.ArtifactStagingDirectory)
           - script: echo $(Build.ArtifactStagingDirectory)
             displayName: 'Show Artifact Staging Directory'
+          - task: AzureWebApp@1
+            displayName: 'Deploy Backend to Prod'
+            inputs:
+              azureSubscription: 'Student-Subs'
+              appName: $(prodBackendAppName)
+              package: $(Build.ArtifactStagingDirectory)/backendBuild
 
   - stage: DeployToProduction
     displayName: 'Deploy to Production'
@@ -80,14 +86,6 @@ stages:
             deploy:
               steps:
                 - checkout: self
-
-                - script: |
-                    echo "Listing files in $(Pipeline.Workspace)"
-                    ls -R $(Pipeline.Workspace)
-                  displayName: 'List files in Pipeline workspace'
-
-
-
 
                 # Descargamos los artefactos del backend
                 - task: DownloadBuildArtifacts@0
