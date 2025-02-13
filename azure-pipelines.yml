@@ -56,12 +56,6 @@ stages:
               artifactName: 'backendBuild'
               targetPath: $(Build.ArtifactStagingDirectory)/backendBuild
 
-          - task: DownloadBuildArtifacts@0
-            displayName: 'Download Backend Artifacts'
-            inputs:
-              buildType: 'current'
-              artifactName: 'backendBuild'
-              downloadPath: $(Build.ArtifactStagingDirectory)
 
 
 
