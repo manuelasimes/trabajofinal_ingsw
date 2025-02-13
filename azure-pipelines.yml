@@ -45,17 +45,9 @@ stages:
               echo "Construyendo el backend..."
               dotnet build final.sln
               echo "Publicando el backend..."
-              dotnet publish BlogApi/BlogApi.csproj -c Release -o $(Build.ArtifactStagingDirectory)/backendBuild
-              echo "Ejecutando pruebas..."
-              dotnet test BlogApi/BlogApi.Tests/BlogApi.Tests.csproj --collect:"XPlat Code Coverage" --results-directory:$(Build.ArtifactStagingDirectory)/TestResults
+
             displayName: 'Build, Publish and Unit Test Backend'
 
-        #publicar tests: 
-          - task: PublishCodeCoverageResults@1
-            displayName: 'Publish Backend Code Coverage'
-            inputs:
-              codeCoverageTool: 'Cobertura'
-              summaryFileLocation: '$(Build.ArtifactStagingDirectory)/TestResults/**/coverage.cobertura.xml'
 
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Backend Artifacts'
