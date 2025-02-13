@@ -45,8 +45,9 @@ stages:
               echo "Construyendo el backend..."
               dotnet build final.sln
               echo "Publicando el backend..."
-
+              dotnet publish -c Release -o $(Build.ArtifactStagingDirectory)/backendBuild
             displayName: 'Build, Publish and Unit Test Backend'
+
 
 
           - task: PublishBuildArtifacts@1
