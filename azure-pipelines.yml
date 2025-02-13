@@ -62,14 +62,8 @@ stages:
               buildType: 'current'
               artifactName: 'backendBuild'
               downloadPath: $(Build.ArtifactStagingDirectory)
-          - script: echo $(Build.ArtifactStagingDirectory)
-            displayName: 'Show Artifact Staging Directory'
-          - task: AzureWebApp@1
-            displayName: 'Deploy Backend to Prod'
-            inputs:
-              azureSubscription: 'Student-Subs'
-              appName: $(prodBackendAppName)
-              package: $(Build.ArtifactStagingDirectory)/backendBuild
+
+
 
   - stage: DeployToProduction
     displayName: 'Deploy to Production'
@@ -95,8 +89,11 @@ stages:
                     artifactName: 'backendBuild'
                     downloadPath: $(Build.ArtifactStagingDirectory)
 
-                - script: echo $(Build.ArtifactStagingDirectory)
-                  displayName: 'Show Artifact Staging Directory'
+                - script: |
+                    echo "Listing files in $(Build.ArtifactStagingDirectory)/backendBuild"
+                    ls -R $(Build.ArtifactStagingDirectory)/backendBuild
+                  displayName: 'List Backend Build Files Before Deployment'
+
 
                 # Desplegar el backend a producción
                 - task: AzureWebApp@1
